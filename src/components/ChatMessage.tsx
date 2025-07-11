@@ -1,23 +1,30 @@
+import ReactMarkdown from 'react-markdown'
+
 interface ChatMessageProps {
   role: 'user' | 'assistant';
   content: string;
 }
 
 const ChatMessage = ({ role, content }: ChatMessageProps) => {
+  const isAssistant = role === "assistant";
+
+
   return (
     <div
       className={`flex items-start gap-4 ${
-        role === 'assistant' ? 'flex-row' : 'flex-row-reverse'
+        isAssistant ? 'flex-row' : 'flex-row-reverse'
       }`}
     >
       <div
         className={`rounded-xl p-4 max-w-[80%] ${
-            role === 'assistant'
+            isAssistant
             ? 'bg-gray-800 text-white'
             : 'bg-purple-600 text-white'
         }`}
         >
-            <p className="whitespace-pre-wrap">{content.trim()}</p>
+            <div className="prose dark:prose-invert">
+              <ReactMarkdown>{content.trim()}</ReactMarkdown>
+            </div>
         </div>
     </div>
   );

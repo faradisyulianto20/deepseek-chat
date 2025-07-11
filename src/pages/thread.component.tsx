@@ -12,11 +12,22 @@ import {Button} from '../components/ui/button'
 
 
 const Thread = () => {
+    // const { threadId } = useParams()
+
     const [messageInput, setMessageInput] = useState("")
     const [streamedMessage, setStreamedMessage] = useState('')
     const [streamedThought, setStreamedThought] = useState('')
 
+    const params = useParams();
+
     const handleSubmit = async () => {
+        await db.createMessage({
+            content: messageInput,
+            role: "user",
+            thought: '',
+            thread_id: params.threadId as string,
+        })
+
         const stream = await ollama.chat({
             model: "deepseek-r1:1.5b",
             messages: [
@@ -52,6 +63,13 @@ const Thread = () => {
                 setStreamedMessage(fullContent)
             }
         }
+
+        await db.createMessage({
+            content: fullContent,
+            role: "assistant",
+            thought: fullThought,
+            thread_id: params.threadId as string,
+        })
     }
 
     const { threadId } = useParams()
