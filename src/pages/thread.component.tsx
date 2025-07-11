@@ -37,7 +37,10 @@ const Thread = () => {
             const messageContent = part.message.content;
 
             if (outputMode === "think") {
-                fullThought += messageContent;
+                if (!(messageContent.includes("<think>") || messageContent.includes("</think>"))) {
+                    fullThought += messageContent;
+                }
+
 
                 setStreamedThought(fullThought)
 

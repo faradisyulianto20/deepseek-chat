@@ -15,7 +15,7 @@ const ThoughtMessage = (props: ThoughtMessageProps) => {
           orientation="vertical"
           className="absolute left-0 top-4 h-[calc(100%-2rem)] w-[3px]"
         />
-        <p className="flex-1 whitespace-pre-line italic">{props.thought.trim()}</p>
+        <p className="flex-1 whitespace-pre-line italic border-l-4 border-slate-500 pl-4">{props.thought.trim()}</p>
       </div>
     </div>
   );
