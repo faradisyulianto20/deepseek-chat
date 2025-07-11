@@ -48,10 +48,6 @@ const Thread = () => {
                 fullContent += messageContent
                 setStreamedMessage(fullContent)
             }
-
-            fullContent += messageContent
-            
-            setStreamedMessage(fullContent)
         }
     }
 

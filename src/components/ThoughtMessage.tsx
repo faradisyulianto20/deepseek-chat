@@ -10,12 +10,12 @@ const ThoughtMessage = (props: ThoughtMessageProps) => {
       <span className="italic text-sm px-2 py-1 bg-secondary rounded-lg">
         AI thought:
       </span>
-      <div className="p-4 relative rounded text-muted-foreground text-sm flex">
+      <div className="m-2 p-2 relative rounded text-muted-foreground text-sm flex bg-slate-800 opacity-25">
         <Separator
           orientation="vertical"
           className="absolute left-0 top-4 h-[calc(100%-2rem)] w-[3px]"
         />
-        <p className="flex-1 whitespace-pre-line">{props.thought.trim()}</p>
+        <p className="flex-1 whitespace-pre-line italic">{props.thought.trim()}</p>
       </div>
     </div>
   );
