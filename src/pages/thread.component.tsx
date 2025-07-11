@@ -9,6 +9,7 @@ import ChatMessage from '../components/ChatMessage'
 import ThoughtMessage from '../components/ThoughtMessage'
 
 import {Button} from '../components/ui/button'
+import { useLiveQuery } from "dexie-react-hooks"
 
 
 const Thread = () => {
@@ -20,6 +21,8 @@ const Thread = () => {
 
     const params = useParams();
 
+    const messages = useLiveQuery(() => db.getMessagesForThread(params.threadId as string), [params.threadId])
+
     const handleSubmit = async () => {
         await db.createMessage({
             content: messageInput,
@@ -27,6 +30,9 @@ const Thread = () => {
             thought: '',
             thread_id: params.threadId as string,
         })
+
+        setStreamedMessage("")
+        setStreamedThought("")
 
         const stream = await ollama.chat({
             model: "deepseek-r1:1.5b",
@@ -99,11 +105,11 @@ const Thread = () => {
                 </div>
             </header>
             <div className="px-44 py-2 text-white flex-1 overflow-y-auto">
-                {/* <h1 className="text-2xl font-bold mb-2">Thread ID:</h1>
-                <p className="mb-4">{thread.id}</p>
-                <p className="text-sm text-gray-400">
-                    Created at: {thread.created_at.toLocaleString()}
-                </p> */}
+                {
+                    messages?.map((message, index) => (
+                        <ChatMessage key={index} role={message.role} content={message.content} thought={message.thought}/>
+                    ))
+                }
                 {
                     !!streamedThought && 
                     <ThoughtMessage thought={streamedThought}/>
