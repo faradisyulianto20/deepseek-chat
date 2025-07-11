@@ -6,6 +6,7 @@ import ollama from "ollama"
 import type { DEX_Thread } from "../lib/dexie" // pastikan ini diexport dari dexie.ts
 
 import ChatMessage from '../components/ChatMessage'
+import ThoughtMessage from '../components/ThoughtMessage'
 
 import {Button} from '../components/ui/button'
 
@@ -13,6 +14,7 @@ import {Button} from '../components/ui/button'
 const Thread = () => {
     const [messageInput, setMessageInput] = useState("")
     const [streamedMessage, setStreamedMessage] = useState('')
+    const [streamedThought, setStreamedThought] = useState('')
 
     const handleSubmit = async () => {
         const stream = await ollama.chat({
@@ -26,9 +28,30 @@ const Thread = () => {
             stream: true
         })
 
+        let fullContent = ""
+        let fullThought = ""
+
+        let outputMode: "think" | "response" = "think";
+
         for await (const part of stream) {
             const messageContent = part.message.content;
-            setStreamedMessage(prevMessage => prevMessage + messageContent)
+
+            if (outputMode === "think") {
+                fullThought += messageContent;
+
+                setStreamedThought(fullThought)
+
+                if(messageContent.includes("</think>")) {
+                    outputMode = "response"
+                }
+            } else {
+                fullContent += messageContent
+                setStreamedMessage(fullContent)
+            }
+
+            fullContent += messageContent
+            
+            setStreamedMessage(fullContent)
         }
     }
 
@@ -64,6 +87,10 @@ const Thread = () => {
                 <p className="text-sm text-gray-400">
                     Created at: {thread.created_at.toLocaleString()}
                 </p> */}
+                {
+                    !!streamedThought && 
+                    <ThoughtMessage thought={streamedThought}/>
+                }
                 {
                     !!streamedMessage && 
                     <ChatMessage role="assistant" content={streamedMessage} />
