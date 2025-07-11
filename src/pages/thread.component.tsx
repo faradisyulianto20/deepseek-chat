@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useLayoutEffect } from "react"
 import { db } from "../lib/dexie"
 import ollama from "ollama"
 
@@ -18,6 +18,8 @@ const Thread = () => {
     const [messageInput, setMessageInput] = useState("")
     const [streamedMessage, setStreamedMessage] = useState('')
     const [streamedThought, setStreamedThought] = useState('')
+
+    const scrollToBottomRef = useRef<HTMLDivElement>(null)
 
     const params = useParams();
 
@@ -44,6 +46,8 @@ const Thread = () => {
             ],
             stream: true
         })
+
+        setMessageInput("")
 
         let fullContent = ""
         let fullThought = ""
@@ -78,6 +82,14 @@ const Thread = () => {
         })
     }
 
+    const handleScrollToBottom = () => {
+        scrollToBottomRef.current?.scrollIntoView()
+    }
+
+    useLayoutEffect(() => {
+        handleScrollToBottom();
+    }, [streamedMessage, streamedThought, messages])
+
     const { threadId } = useParams()
     const [thread, setThread] = useState<DEX_Thread | null>(null)
 
@@ -104,7 +116,7 @@ const Thread = () => {
                     <p>Created at: {thread.created_at.toLocaleString()}</p>
                 </div>
             </header>
-            <div className="px-44 py-2 text-white flex-1 overflow-y-auto">
+            <div className="px-12 md:px-24 lg:px-44 py-2 text-white flex-1 overflow-y-auto">
                 {
                     messages?.map((message, index) => (
                         <ChatMessage key={index} role={message.role} content={message.content} thought={message.thought}/>
@@ -118,6 +130,7 @@ const Thread = () => {
                     !!streamedMessage && 
                     <ChatMessage role="assistant" content={streamedMessage} />
                 }
+                <div ref={scrollToBottomRef}></div>
             </div>
             <div className="mt-auto bg-gray-900 px-4 border-t-2 border-t-slate-700 flex justify-center items-center">
                 <div className="py-6 flex gap-2 items-center justify-center">
